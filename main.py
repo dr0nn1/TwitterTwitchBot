@@ -5,6 +5,8 @@ import tweepy
 from Twitch import twitch
 
 def start():
+    print("Starting")
+    time.sleep(90)
     consumerKey = ""
     consumerSecret = ""
     accessToken = ""
@@ -13,7 +15,7 @@ def start():
     clientID = ""
     clientSecret = ""
     config = configparser.ConfigParser()
-    config.read("config.txt")
+    config.read("/home/pi/twitterTwitchBot/config.txt")
     config.sections()
     for key in config["Twitter"]:
         if key == "consumer-key":
