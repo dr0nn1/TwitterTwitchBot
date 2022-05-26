@@ -1,12 +1,14 @@
 import configparser
 import time
 import tweepy
+import subprocess
+
 
 from Twitch import twitch
 
 def start():
-    print("Starting")
     time.sleep(90)
+    print("Slept 90 sec, starts.")
     consumerKey = ""
     consumerSecret = ""
     accessToken = ""
@@ -39,23 +41,36 @@ def start():
         auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
         auth.set_access_token(accessToken, accessSecret)
         api = tweepy.API(auth)
+    except KeyboardInterrupt:
+        exit("Ctrl + c, exiting")
     except:
-        exit("qutting, something did not work")
+        subprocess.Popen("/usr/bin/python3 -u  /home/pi/twitterTwitchBot/main.py > /home/pi/twitterTwitchBot/cronjob.log 2>&1",shell=True)
+        exit("qutting, something did not work when getting keys")
     
+    print("Checking online")
     while True:
-        if twitchBot.checkLive():
-            info = twitchBot.getInfoIfLive()
-            if info["game"] != game:
-                #twitter her!
-                game = info["game"]
-                status= f'@LIRIK is now playing {info["game"]} with {info["viewers"]} viewers!'
-                api.update_status(status)
-                print("updated status")
-        else:
-            game = ""
+        try:
+            if twitchBot.checkLive():
+                info = twitchBot.getInfoIfLive()
+                if info["game"] != game:
+                    #twitter her!
+                    game = info["game"]
+                    status= f'@LIRIK is now playing {info["game"]} with {info["viewers"]} viewers! https://www.twitch.tv/lirik'
+                    api.update_status(status)
+                    print("updated status")
+            else:
+                game = ""
+
+            time.sleep(60)
+        except KeyboardInterrupt:
+            exit("Ctrl + c, exiting")
+        except:
+            subprocess.Popen("/usr/bin/python3 -u  /home/pi/twitterTwitchBot/main.py > /home/pi/twitterTwitchBot/cronjob.log 2>&1",shell=True)
+            exit("qutting, something did not work")
  
-        time.sleep(60)
+        
 
 
 if __name__ == "__main__":
+    print("Starting program")
     start()
