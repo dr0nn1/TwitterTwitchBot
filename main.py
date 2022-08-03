@@ -55,7 +55,7 @@ def start():
                 if info["game"] != game:
                     #twitter her!
                     game = info["game"]
-                    status= f'@LIRIK is now playing {info["game"]} with {info["viewers"]} viewers! https://www.twitch.tv/lirik'
+                    status= f'LIRIK is now playing {info["game"]} with {info["viewers"]} viewers! https://www.twitch.tv/lirik'
                     api.update_status(status)
                     print("updated status")
             else:
