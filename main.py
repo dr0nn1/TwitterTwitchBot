@@ -38,9 +38,12 @@ def start():
     game = ""
     try:
         twitchBot = twitch.twitchAPI(clientID,clientSecret,"lirik")
-        auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
-        auth.set_access_token(accessToken, accessSecret)
-        api = tweepy.API(auth)
+        twitterClient = tweepy.Client(
+            consumer_key=consumerKey,
+            consumer_secret=consumerSecret,
+            access_token=accessToken,
+            access_token_secret=accessSecret
+        )   
     except KeyboardInterrupt:
         exit("Ctrl + c, exiting")
     except:
@@ -56,7 +59,7 @@ def start():
                     #twitter her!
                     game = info["game"]
                     status= f'LIRIK is now playing {info["game"]} with {info["viewers"]} viewers! https://www.twitch.tv/lirik'
-                    api.update_status(status)
+                    twitterClient.create_tweet(text=status)
                     print("updated status")
             else:
                 game = ""
