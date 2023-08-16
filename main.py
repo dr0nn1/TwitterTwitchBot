@@ -1,10 +1,9 @@
 import configparser
 import time
 import tweepy
-import subprocess
-
 
 from Twitch import twitch
+
 
 def start():
     time.sleep(90)
@@ -21,44 +20,44 @@ def start():
     config.sections()
     for key in config["Twitter"]:
         if key == "consumer-key":
-            consumerKey = config.get("Twitter",key)
+            consumerKey = config.get("Twitter", key)
         if key == "consumer-secret":
-            consumerSecret = config.get("Twitter",key)
+            consumerSecret = config.get("Twitter", key)
         if key == "access-token":
-            accessToken = config.get("Twitter",key)
+            accessToken = config.get("Twitter", key)
         if key == "access-secret":
-            accessSecret = config.get("Twitter",key)
+            accessSecret = config.get("Twitter", key)
 
     for key in config["Twitch"]:
         if key == "client-id":
-            clientID = config.get("Twitch",key)
+            clientID = config.get("Twitch", key)
         if key == "client-secret":
-            clientSecret = config.get("Twitch",key)
-    
+            clientSecret = config.get("Twitch", key)
+
     game = ""
     try:
-        twitchBot = twitch.twitchAPI(clientID,clientSecret,"lirik")
+        twitchBot = twitch.twitchAPI(clientID, clientSecret, "lirik")
         twitterClient = tweepy.Client(
             consumer_key=consumerKey,
             consumer_secret=consumerSecret,
             access_token=accessToken,
-            access_token_secret=accessSecret
-        )   
+            access_token_secret=accessSecret,
+        )
     except KeyboardInterrupt:
         exit("Ctrl + c, exiting")
     except:
-        subprocess.Popen("/usr/bin/python3 -u  /home/pi/twitterTwitchBot/main.py > /home/pi/twitterTwitchBot/cronjob.log 2>&1",shell=True)
-        exit("qutting, something did not work when getting keys")
-    
+        print("Error in making clients")
+        return
+
     print("Checking online")
     while True:
         try:
             if twitchBot.checkLive():
                 info = twitchBot.getInfoIfLive()
                 if info["game"] != game:
-                    #twitter her!
+                    # twitter her!
                     game = info["game"]
-                    status= f'LIRIK is now playing {info["game"]} with {info["viewers"]} viewers! https://www.twitch.tv/lirik'
+                    status = f'LIRIK is now playing {info["game"]} with {info["viewers"]} viewers! https://www.twitch.tv/lirik'
                     twitterClient.create_tweet(text=status)
                     print("updated status")
             else:
@@ -68,12 +67,15 @@ def start():
         except KeyboardInterrupt:
             exit("Ctrl + c, exiting")
         except:
-            subprocess.Popen("/usr/bin/python3 -u  /home/pi/twitterTwitchBot/main.py > /home/pi/twitterTwitchBot/cronjob.log 2>&1",shell=True)
-            exit("qutting, something did not work")
- 
-        
+            print("qutting, something did not work")
+            return
 
 
 if __name__ == "__main__":
     print("Starting program")
-    start()
+    while True:
+        try:
+            start()
+        except KeyboardInterrupt:
+            exit("Ctrl + c, exiting")
+        print("Restarting program")
